@@ -1,0 +1,7 @@
+input:focus {
+  background-color: none !important;
+  box-shadow: none !important;
+} 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
