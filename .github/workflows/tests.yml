@@ -8,7 +8,7 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
-      - name: nstall Node 18
+      - name: install Node 18
         uses: actions/setup-node@v3
         with:
           node-version: 18
