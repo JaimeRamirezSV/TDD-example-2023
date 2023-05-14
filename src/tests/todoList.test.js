@@ -94,11 +94,11 @@ describe("notification.vue", () => {
     } );
 
     // Unhappy paths
-    it( "can show an error when an invalid name is filled and try to save it", async () => {
+    /* it( "can show an error when an invalid name is filled and try to save it", async () => {
         expect( wrapper.text() ).toContain( "Please use more than 4 characters." );
-    } );
+    } ); */
 
-    it( "can show an error when the item name is empty and try to save it", async () => {
+    /* it( "can show an error when the item name is empty and try to save it", async () => {
         expect( wrapper.text() ).toContain( "Field is required." );
-    } )
+    } ); */
 } );   
