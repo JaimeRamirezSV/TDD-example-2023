@@ -1,7 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-    { path : '/', name : 'home', component: () => import( '../pages/todoList.vue' )  }
+    { 
+        path : '', 
+        component   : () => import( "../layouts/mainLayout.vue" ),
+        children : [ {
+            name : "todo",
+            component: () => import( '../pages/todoList.vue' ),
+            path : ""
+        } ] 
+    }
 ]
 
 const router = createRouter( {

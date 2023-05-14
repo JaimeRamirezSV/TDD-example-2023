@@ -10,85 +10,95 @@ import {
 } from "vitest";
 import todoList from "../pages/todoList.vue"
 import { componentFactory, router } from "./baseTests.js";
+import { setActivePinia, createPinia } from 'pinia';
 
 describe("notification.vue", () => {
+    let wrapper = null;
     
-    afterEach(  () => {} );
-    beforeEach( () => {} );
-    beforeAll(  () => router.push( { name : "home" } ) );
+    afterEach(  async () => { 
+        // Reset environment
+        await wrapper.unmount(); 
+        await setActivePinia( null );
+    } );
+    beforeEach( async () => { 
+        // Setup environmen
+        setActivePinia( createPinia() );
+        wrapper = await componentFactory( todoList ); 
+    } );
+
+    beforeAll(  () => router.push( { name : "todo" } ) );
     afterAll(   () => {} ); 
 
     // Happy paths
-    it( "Can be rendered", async()=> {
-        const wrapper = await componentFactory( todoList );
+    it( "Can be rendered", async() => {
         expect( wrapper.exists() ).toBeTruthy();
     } );
 
     it( "can add a new item", async() => {
-        const wrapper = componentFactory( todoList );
+        await wrapper.find( "button[id=add]").trigger( "click" );
         const input   = wrapper.find( "input" );
         const save    = wrapper.find( "button[id=save]" );
         const saveSpy = vi.spyOn( wrapper.vm, 'save' );
-        input.setValue( "Test 1" );
+        await input.setValue( "Test 1" );
         await save.trigger( "click" );
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
-        const liElements = wrapper.findAll( "li" );
+        const tbody = wrapper.find( "tbody" );
         expect( saveSpy ).toHaveBeenCalled();
-        expect( liElements[ 0 ].find( "span" ).text() ).toContain( "Test 1" );
+        expect( tbody.text() ).toContain( "Test 1" );
     } );
 
     it( "can edit an item", async () => {
-        const wrapper = componentFactory( todoList );
-        await wrapper.vm.todoStore.addItem( { id : 2, name : "test2" } );
-        await wrapper.findAll( "li" )[ 1 ].findAll( "a" )[ 1 ].trigger( 'click' );
-        await wrapper.vm.$nextTick();
+        await wrapper.vm.todoStore.addItem( { id : 2, name : "Test to edit" } );
+        const saveSpy = vi.spyOn( wrapper.vm, 'update' );
+        const tbody = wrapper.find( "tbody" );
+        const edit =  tbody.findAll( "td" )[ 1 ].findAll( "a" )[ 1 ];
+        await edit.trigger( "click" ); 
         const input = wrapper.find( "input" );
         const save  = wrapper.find( "button[id=save]" );
-        input.setValue( "I have been updated!" );
-        const saveSpy = vi.spyOn( wrapper.vm, 'update' );
-        await save.trigger( "click" );
+        await input.setValue( "I have been updated!" );
+        await save.trigger( "click" ); 
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         expect( saveSpy ).toHaveBeenCalledOnce();
-        expect( wrapper.findAll( "li" )[ 1 ].find( "span" ).text() ).toContain( "I have been updated!" );
+        expect( wrapper.find( "tbody" ).text() ).toContain( "I have been updated!" );
     } );
 
     it( "can remove an item", async () => {
-        const wrapper = componentFactory( todoList );
+        await wrapper.vm.todoStore.addItem( { id : 6, name : "Element to delete" } );
         const removeSpy = vi.spyOn( wrapper.vm, 'remove' );
-        await wrapper.findAll( "li" )[ 1 ].findAll( "a" )[ 0 ].trigger( 'click' );
-        await wrapper.vm.$nextTick();
+        const tbody = wrapper.find( "tbody" );
+        const deleteBTN = tbody.findAll( "td" )[ 1 ].findAll( "a" )[ 0 ];
+        await deleteBTN.trigger( "click" );
+        await wrapper.find( "button[id=confirm]").trigger( "click" );
         expect( removeSpy ).toHaveBeenCalledOnce();
-        expect( wrapper.findAll( "li" ).length ).toBe( 1 );
+        expect( wrapper.find( "tbody" ).text() ).toContain( "Record not found" );
     } );
 
     it( "can render a list of items", async() => {
-        const wrapper = componentFactory( todoList );
-        await wrapper.vm.todoStore.addItem( { id : 2, name : "Test 2" } );
-        await wrapper.vm.todoStore.addItem( { id : 3, name : "Test 3" } );
-        await wrapper.vm.todoStore.addItem( { id : 4, name : "Test 4" } );
-        await wrapper.vm.$nextTick();
-        const ul = wrapper.find( "ul" );
-        expect( ul.findAll( "li" ).length ).toBe( 4 );
-        expect( ul.text() ).toContain( "Test 1" );
-        expect( ul.text() ).toContain( "Test 2" );
-        expect( ul.text() ).toContain( "Test 3" );
-        expect( ul.text() ).toContain( "Test 4" );
+        await wrapper.vm.todoStore.addItem( { id : 5, name : "Test 2" } );
+        await wrapper.vm.todoStore.addItem( { id : 6, name : "Test 3" } );
+        await wrapper.vm.todoStore.addItem( { id : 7, name : "Test 4" } );
+        const tbody = wrapper.find( "tbody" );
+        expect( tbody.findAll( "tr" ).length ).toBe( 3 );
+        expect( tbody.text() ).toContain( "Test 2" );
+        expect( tbody.text() ).toContain( "Test 3" );
+        expect( tbody.text() ).toContain( "Test 4" );
     } );
 
-    it( "can render `not found` when there are no records", async () => {
-        const wrapper = componentFactory( todoList );
+    it( "can render `Record not found` when there are no records", async () => {
         wrapper.vm.todoStore.items = [];
-        await wrapper.vm.$nextTick();
-        expect( wrapper.find( "ul" ).find( "li" ).exists() ).toBeFalsy();
-        expect( wrapper.text() ).toContain( "Records not found." );
+        expect( wrapper.find( "tbody").text() ).toContain( "Record not found" );
     } );
 
     // Unhappy paths
-    it.todo( "can show an error when an invalid name is filled and try to save it" );
+    it( "can show an error when an invalid name is filled and try to save it", async () => {
+        expect( wrapper.text() ).toContain( "Please use more than 4 characters." );
+    } );
 
-    it.todo( "can show an error when the item name is empty and try to save it" );
+    it( "can show an error when the item name is empty and try to save it", async () => {
+        expect( wrapper.text() ).toContain( "Field is required." );
+    } )
 } );   

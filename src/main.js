@@ -1,7 +1,17 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
-import router from './plugins/router'
-import pinia from './plugins/pinia'
+import { createApp } from 'vue';
+import './style.css';
+import "vue-toastification/dist/index.css";
+import App from './App.vue';
+import router from './plugins/router';
+import pinia from './plugins/pinia';
+import Toast from "vue-toastification";
 
-createApp(App).use( router ).use( pinia ).mount('#app')
+const options = {
+    // You can set your default options here
+};
+
+createApp( App )
+    .use( router )
+    .use( pinia )
+    .use( Toast, options )
+    .mount('#app');

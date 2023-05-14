@@ -1,52 +1,102 @@
 <template>
-    <section class="w-screen h-screen flex items-center">    
-        <!-- List -->
-        <section v-if="!showForm" class="w-4/12 mx-auto bg-gray-100 px-3 py-3 rounded-md">
-            <div class="flex justify-between">
-                <h2 class="text-3xl font-bold tracking-tight text-gray-900 mb-2.5">
-                    Items
-                </h2>
+    <section class="w-screen h-90 pt-16"> 
+        <!-- Confirm -->
+        <div v-if="isRevealed" class="modal-layout bg-white w-4/12 mx-auto rounded-md p-4">
+            <div class="modal text-right">
+                <h1 class="text-left">Would you like to delete this item?</h1>
                 <button 
-                    @click="showForm = !showForm" 
-                    v-if="!showForm"
-                    class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    @click="cancel( true )" 
+                    id="cancel"
+                    class="mt-2.5 inline-block rounded-md bg-red-400 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 mr-4"
+                > 
+                    Cancel
+                </button>
+                <button 
+                    @click.stop="confirm( true )" 
+                    id="confirm"
+                    class="mt-2.5 inline-block rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                    Add
+                    Yes
                 </button>
             </div>
-            
-            <ul v-show="!showForm">
-                <li 
-                    v-for="( item, index ) in todoStore.items" 
-                    :key="index" 
-                    class="flex justify-between"
-                >
-                    <span class="item"> {{ index + 1 }} - {{  item.name  }} </span>
-                    <a 
-                        href="#" 
-                        class="font-medium text-indigo-600 hover:text-indigo-500" 
-                        @click="remove( item )"
-                    >
-                        Delete
-                    </a>
-                    <a
-                        href="#" 
-                        class="font-medium text-indigo-600 hover:text-indigo-500" 
-                        @click="edit( item )"
-                    >
-                        Edit
-                    </a>
-                </li>
-            </ul>
-
-            <section v-if="!todoStore.items.length" class="text-red-500 text-center">
-                Records not found.
-            </section>
+        </div>
+        
+        <!-- List -->
+        <section 
+            v-if="!showForm" 
+            class="w-8/12 mx-auto bg-gray-800 px-3 py-3 rounded-md"
+        >
+            <div class="px-4 sm:px-6 lg:px-8">
+                <div class="sm:flex sm:items-center">
+                    <div class="sm:flex-auto">
+                        <h1 class="text-xl font-semibold leading-6 text-white">List</h1>
+                    </div>
+                    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                        <button 
+                            id="add"
+                            @click="showForm = !showForm" 
+                            v-if="!showForm"
+                            class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-8 flow-root">
+                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
+                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white" v-if="todoStore.items.length">
+                                <tr  
+                                    v-for="( item, index ) in todoStore.items" 
+                                    :key="index" 
+                                >
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ item.name }}</td>
+                                    <td class="relative whitespace-nowrap py-4 pl-3 text-right text-sm font-medium sm:pr-3">
+                                        <a 
+                                            href="#" 
+                                            class="font-medium text-indigo-600 hover:text-indigo-500 mr-4" 
+                                            @click="remove( item )"
+                                        >
+                                            Delete
+                                        </a>
+                                        <a
+                                            href="#" 
+                                            class="font-medium text-indigo-600 hover:text-indigo-500" 
+                                            @click="edit( item )"
+                                        >
+                                            Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody v-else>
+                                <tr class="text-center bg-white">
+                                    <td colspan="2" class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-red-500 sm:pl-6">
+                                        Record not found
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
         </section>
 
         <!-- Form -->
         <form 
-            v-show="showForm" 
+            v-if="showForm" 
             @submit.prevent 
             class="w-4/12 mx-auto bg-gray-100 px-3 py-3 rounded-md"
         >
@@ -84,7 +134,7 @@
                 <button 
                     id="save"
                     class="mt-2.5 block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    @click.stop="form.id != '' ? update( form ) : save( form )" 
+                    @click="form.id != '' ? update( form ) : save( form )" 
                 > 
                     Save 
                 </button>
@@ -104,10 +154,19 @@
 
 <script setup>
 import { useTodoStore } from "../stotes/todo";
-import { ref, reactive, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
+import { useToast } from "vue-toastification";
+import { useConfirmDialog } from "@vueuse/core";
+const {
+  isRevealed,
+  reveal,
+  confirm,
+  cancel,
+} = useConfirmDialog();
 
+const toast = useToast(); 
 const todoStore = useTodoStore();
 const showForm = ref( false ); 
 const form = ref( {
@@ -135,6 +194,7 @@ async function save( item = {} ){
         showForm.value = false;
         form.value = { ...todoStore.baseItem };
         $vuelidate.value.$reset();
+        toast( "Item added!" );
       }
     } );
 }
@@ -142,14 +202,15 @@ async function save( item = {} ){
 
 async function update( item = {} ){
     await $vuelidate.value.$validate()
-    .then( ( isValid ) => {
-      if( isValid ){ 
-        todoStore.updateItem( form.value ); 
-        showForm.value = false;
-        form.value = { ...todoStore.baseItem };
-        $vuelidate.value.$reset();
-      }
-    } );
+        .then( ( isValid ) => {
+        if( isValid ){ 
+            todoStore.updateItem( form.value ); 
+            showForm.value = false;
+            form.value = { ...todoStore.baseItem };
+            $vuelidate.value.$reset();
+            toast.success( "Item updated!" );
+        }
+        } );
 }
 
 function edit( item = {} ){
@@ -157,11 +218,17 @@ function edit( item = {} ){
     showForm.value = true;
 }
 
-function remove( item = {} ){
-    todoStore.removeItem( item )
+async function remove( item = {} ){
+    const { data, isCanceled } = await reveal();
+    if ( !isCanceled ) {
+        todoStore.removeItem( item );
+        toast.success( "Item removed!" );
+    }
 }
 
-onMounted( () => { form.value = { ...todoStore.baseItem }; } );
+onMounted( () => { 
+    form.value = { ...todoStore.baseItem }; 
+} );
 </script>
 
 <style>
@@ -185,4 +252,8 @@ onMounted( () => { form.value = { ...todoStore.baseItem }; } );
     list-style-type: none;
     padding-top: 1rem;
  }
+
+.h-90 {
+    height: 91vh !important;
+ } 
 </style>
