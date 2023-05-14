@@ -7,7 +7,11 @@ jobs:
     strategy:
       fail-fast: false
     steeps:
-      - name: Run Tests
-            run: |
-          npm install
-          npm run tests
+      - name:  Install Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Intall dependencies
+          run: npm install
+      - name: run tests
+          run: npm run tests
