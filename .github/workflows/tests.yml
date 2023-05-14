@@ -1,0 +1,13 @@
+name: Tests
+on: [ push, pull_request ]
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+    steeps:
+      - name: Run Tests
+            run: |
+          npm install
+          npm run tests
