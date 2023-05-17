@@ -21,7 +21,7 @@ describe("notification.vue", () => {
         await setActivePinia( null );
     } );
     beforeEach( async () => { 
-        // Setup environmen
+        // Setup environment
         setActivePinia( createPinia() );
         wrapper = await componentFactory( todoList ); 
     } );
