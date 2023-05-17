@@ -47,7 +47,7 @@ describe("notification.vue", () => {
         const tbody = wrapper.find( "tbody" );
         expect( saveSpy ).toHaveBeenCalled();
         expect( tbody.text() ).toContain( "Test 1" );
-    } );
+    }, 5000 );
 
     it( "can edit an item", async () => {
         await wrapper.vm.todoStore.addItem( { id : 2, name : "Test to edit" } );
@@ -64,7 +64,7 @@ describe("notification.vue", () => {
         await wrapper.vm.$nextTick();
         expect( saveSpy ).toHaveBeenCalledOnce();
         expect( wrapper.find( "tbody" ).text() ).toContain( "I have been updated!" );
-    } );
+    }, 5000 );
 
     it( "can remove an item", async () => {
         await wrapper.vm.todoStore.addItem( { id : 6, name : "Element to delete" } );
@@ -75,7 +75,7 @@ describe("notification.vue", () => {
         await wrapper.find( "button[id=confirm]").trigger( "click" );
         expect( removeSpy ).toHaveBeenCalledOnce();
         expect( wrapper.find( "tbody" ).text() ).toContain( "Record not found" );
-    } );
+    }, 5000 );
 
     it( "can render a list of items", async() => {
         await wrapper.vm.todoStore.addItem( { id : 5, name : "Test 2" } );
@@ -86,19 +86,19 @@ describe("notification.vue", () => {
         expect( tbody.text() ).toContain( "Test 2" );
         expect( tbody.text() ).toContain( "Test 3" );
         expect( tbody.text() ).toContain( "Test 4" );
-    } );
+    }, 5000 );
 
     it( "can render `Record not found` when there are no records", async () => {
         wrapper.vm.todoStore.items = [];
         expect( wrapper.find( "tbody").text() ).toContain( "Record not found" );
-    } );
+    }, 5000 );
 
     // Unhappy paths
-    /* it( "can show an error when an invalid name is filled and try to save it", async () => {
+    it.todo( "can show an error when an invalid name is filled and try to save it", async () => {
         expect( wrapper.text() ).toContain( "Please use more than 4 characters." );
-    } ); */
+    } );
 
-    /* it( "can show an error when the item name is empty and try to save it", async () => {
+    it.todo( "can show an error when the item name is empty and try to save it", async () => {
         expect( wrapper.text() ).toContain( "Field is required." );
-    } ); */
+    } );
 } );   
